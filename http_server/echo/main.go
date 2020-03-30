@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"math/rand"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -24,6 +26,7 @@ func main() {
 	e.GET("/square", squareHandler)
 	// POST Bodyの読み込み
 	e.POST("/incr", incrementHandler)
+	e.GET("/dice", diceHandler)
 
 	// 8080ポートで起動
 	e.Logger.Fatal(e.Start(":8080"))
@@ -66,6 +69,12 @@ func incrementHandler(c echo.Context) error {
 	}
 	counter += incrRequest.Num
 	return c.String(http.StatusOK, fmt.Sprintf("Value of Counter is %d \n", counter))
+}
+
+// 1d6 を振ってテキストで返す
+func diceHandler(c echo.Context) error {
+	rand.Seed(time.Now().UnixNano())
+	return c.String(http.StatusOK, fmt.Sprintf("%d", rand.Intn(6) + 1))
 }
 
 type incrRequest struct {
