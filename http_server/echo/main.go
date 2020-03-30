@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"math/rand"
 	"time"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -27,6 +28,7 @@ func main() {
 	// POST Bodyの読み込み
 	e.POST("/incr", incrementHandler)
 	e.GET("/dice", diceHandler)
+	e.GET("/heavy_content", heavyContentHandler)
 
 	// 8080ポートで起動
 	e.Logger.Fatal(e.Start(":8080"))
@@ -77,6 +79,10 @@ func incrementHandler(c echo.Context) error {
 func diceHandler(c echo.Context) error {
 	rand.Seed(time.Now().UnixNano())
 	return c.String(http.StatusOK, fmt.Sprintf("%d", rand.Intn(6) + 1))
+}
+
+func heavyContentHandler(c echo.Context) error {
+	return c.String(http.StatusOK, strings.Repeat("abcdefghij", 500))
 }
 
 type incrRequest struct {
