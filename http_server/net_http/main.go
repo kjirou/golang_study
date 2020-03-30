@@ -68,6 +68,11 @@ func incrementHandler(w http.ResponseWriter, req *http.Request) {
 	// bodyの読み込みに開いたio Readerを最後にCloseする
 	defer body.Close()
 
+	if req.Method != "POST" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 	buf := new(bytes.Buffer)
 	io.Copy(buf, body)
 
