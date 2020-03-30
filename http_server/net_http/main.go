@@ -8,6 +8,8 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"math/rand"
+	"time"
 )
 
 var (
@@ -23,6 +25,8 @@ func main() {
 	http.HandleFunc("/square", squareHandler)
 	// POST Bodyの読み込み
 	http.HandleFunc("/incr", incrementHandler)
+	// GET
+	http.HandleFunc("/dice", diceHandler)
 
 	// 8080ポートで起動
 	http.ListenAndServe(":8080", nil)
@@ -88,4 +92,10 @@ type incrRequest struct {
 	// jsonタグをつける事でjsonのunmarshalが出来る
 	// jsonパッケージに渡すので、Publicである必要がある
 	Num int `json:"num"`
+}
+
+// 1d6 を振ってテキストで返す
+func diceHandler(w http.ResponseWriter, req *http.Request) {
+	rand.Seed(time.Now().UnixNano())
+	fmt.Fprint(w, fmt.Sprintf("%d", rand.Intn(6) + 1))
 }
