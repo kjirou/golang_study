@@ -68,7 +68,9 @@ func incrementHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal Server Error")
 	}
 	counter += incrRequest.Num
-	return c.String(http.StatusOK, fmt.Sprintf("Value of Counter is %d \n", counter))
+	responseBody := make(map[string]int)
+	responseBody["counter"] = counter
+	return c.JSON(http.StatusOK, responseBody)
 }
 
 // 1d6 を振ってテキストで返す
