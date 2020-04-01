@@ -26,7 +26,10 @@ func catFile(path string) (err error) {
 		}
 		// fileはCloseする必要がある。
 		// 本当はエラーハンドリングが必要(課題)
-		file.Close()
+		closeErr := file.Close()
+		if closeErr != nil {
+			err = closeErr
+		}
 	}()
 
 	// //エラーを明示的に返してdeferが呼ばれるか確認する。
