@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 func main() {
 	// mapが参照型である事の確認
@@ -24,9 +27,21 @@ func main() {
 		4: "佐々木",
 	}
 
+	type student struct {
+		Id int
+		Name string
+	}
+	students := []student{}
+
 	for k, v := range studnetIDMap {
+		students = append(students, student{k, v})
 		// fmt.Printfでフォーマットに従った文字列を標準出力に出せる
 		fmt.Printf("Name of StudentID:%d is %s\n", k, v)
+	}
+
+	sort.Slice(students, func(i, j int) bool { return students[i].Id < students[j].Id })
+	for _, e := range students {
+		fmt.Printf("student Id=%d, Name=%s\n", e.Id, e.Name)
 	}
 }
 
