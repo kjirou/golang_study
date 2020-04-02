@@ -5,6 +5,8 @@ import "fmt"
 func main() {
 	// mapが参照型である事の確認
 	m := make(map[string]string)
+	fmt.Printf("main 関数内での m 変数の値 = %d / %p\n", m, m)
+	fmt.Printf("main 関数内での m 変数のアドレス = %d / %p\n", &m, &m)
 	// main関数内でmは変更していないが参照渡しされるので変更される。
 	addMap(m)
 	fmt.Println(m)
@@ -29,6 +31,8 @@ func main() {
 }
 
 func addMap(m map[string]string) {
+	fmt.Printf("addMap 関数内での m 変数の値 = %d / %p\n", m, m)
+	fmt.Printf("addMap 関数内での m 変数のアドレス = %d / %p\n", &m, &m)
 	m["a"] = "あ"
 }
 func addMapWithCopy(m map[string]string) {
