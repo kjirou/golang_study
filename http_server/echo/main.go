@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"math/rand"
+	"time"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -24,6 +27,8 @@ func main() {
 	e.GET("/square", squareHandler)
 	// POST Bodyの読み込み
 	e.POST("/incr", incrementHandler)
+	e.GET("/dice", diceHandler)
+	e.GET("/heavy_content", heavyContentHandler)
 
 	// 8080ポートで起動
 	e.Logger.Fatal(e.Start(":8080"))
@@ -50,6 +55,9 @@ func squareHandler(c echo.Context) error {
 		// 他のエラーの可能性もあるがサンプルとして纏める
 		return echo.NewHTTPError(http.StatusBadRequest, "num is not integer")
 	}
+	if num >= 100 {
+		return echo.NewHTTPError(http.StatusBadRequest, "num is 100 or over")
+	}
 	// fmt.Sprintfでフォーマットに沿った文字列を生成できる。
 	return c.String(http.StatusOK, fmt.Sprintf("Square of %d is equal to %d", num, num*num))
 }
@@ -62,7 +70,19 @@ func incrementHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal Server Error")
 	}
 	counter += incrRequest.Num
-	return c.String(http.StatusOK, fmt.Sprintf("Value of Counter is %d \n", counter))
+	responseBody := make(map[string]int)
+	responseBody["counter"] = counter
+	return c.JSON(http.StatusOK, responseBody)
+}
+
+// 1d6 を振ってテキストで返す
+func diceHandler(c echo.Context) error {
+	rand.Seed(time.Now().UnixNano())
+	return c.String(http.StatusOK, fmt.Sprintf("%d", rand.Intn(6) + 1))
+}
+
+func heavyContentHandler(c echo.Context) error {
+	return c.String(http.StatusOK, strings.Repeat("abcdefghij", 500))
 }
 
 type incrRequest struct {

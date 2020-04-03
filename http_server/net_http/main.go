@@ -8,6 +8,8 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"math/rand"
+	"time"
 )
 
 var (
@@ -23,6 +25,8 @@ func main() {
 	http.HandleFunc("/square", squareHandler)
 	// POST Bodyの読み込み
 	http.HandleFunc("/incr", incrementHandler)
+	// GET
+	http.HandleFunc("/dice", diceHandler)
 
 	// 8080ポートで起動
 	http.ListenAndServe(":8080", nil)
@@ -52,6 +56,11 @@ func squareHandler(w http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(w, "num is not integer")
 		return
 	}
+	if num >= 100 {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, "num is 100 or over")
+		return
+	}
 	// fmt.Sprintfでフォーマットに沿った文字列を生成できる。
 	fmt.Fprint(w, fmt.Sprintf("Square of %d is equal to %d", num, num*num))
 }
@@ -62,6 +71,11 @@ func incrementHandler(w http.ResponseWriter, req *http.Request) {
 	body := req.Body
 	// bodyの読み込みに開いたio Readerを最後にCloseする
 	defer body.Close()
+
+	if req.Method != "POST" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
 
 	buf := new(bytes.Buffer)
 	io.Copy(buf, body)
@@ -78,4 +92,10 @@ type incrRequest struct {
 	// jsonタグをつける事でjsonのunmarshalが出来る
 	// jsonパッケージに渡すので、Publicである必要がある
 	Num int `json:"num"`
+}
+
+// 1d6 を振ってテキストで返す
+func diceHandler(w http.ResponseWriter, req *http.Request) {
+	rand.Seed(time.Now().UnixNano())
+	fmt.Fprint(w, fmt.Sprintf("%d", rand.Intn(6) + 1))
 }
